@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Блог{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">✨ Лента новостей</h1>
+
+{% for post in posts %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="card-title mb-0">{{ post.title }}</h5>
+                {% if current_user.is_authenticated and post.author == current_user %}
+                <div>
+                    <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary me-1">✏️</a>
+                    <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Вы уверены?')">🗑️</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if post.image %}
+            <div class="post-image mb-3">
+                <img src="{{ url_for('static', filename='uploads/posts/' + post.image) }}" 
+                     alt="Изображение поста" 
+                     style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 2px solid var(--neon-purple);">
+            </div>
+            {% endif %}
+            
+            <p class="card-text post-content" style="color: #d0d0d0;">{{ post.content }}</p>
+            <p class="text-muted mb-3">
+                <a href="{{ url_for('profile', username=post.author.username) }}">
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + post.author.avatar) }}" 
+                         alt="" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle; border: 1px solid var(--neon-cyan);">
+                    {{ post.author.username }}
+                </a>
+                | 📅 {{ post.date_posted.strftime('%d.%m.%Y %H:%M') }}
+            </p>
+
+            <!-- Комментарии -->
+            <div class="comments-section mt-3 pt-3 border-top" style="border-color: var(--dark-border) !important;">
+                <h6 class="mb-3" style="color: var(--neon-pink);">💬 Комментарии ({{ post.comments|length }})</h6>
+                
+                {% for comment in post.comments %}
+                <div class="comment mb-2 p-2 rounded" style="background: rgba(0, 255, 247, 0.05);">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <a href="{{ url_for('profile', username=comment.user.username) }}" class="text-decoration-none">
+                                <img src="{{ url_for('static', filename='uploads/avatars/' + comment.user.avatar) }}" 
+                                     alt="" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; vertical-align: middle;" class="me-1">
+                                <span style="color: var(--neon-cyan);">{{ comment.user.username }}</span>
+                            </a>
+                            <small class="text-muted ms-2">{{ comment.date_created.strftime('%d.%m.%Y %H:%M') }}</small>
+                        </div>
+                        {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.id == post.author.id) %}
+                        <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-link text-danger p-0" onclick="return confirm('Удалить комментарий?')">✕</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <p class="mb-0 mt-1" style="color: #d0d0d0; font-size: 0.9rem;">{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+
+                {% if current_user.is_authenticated %}
+                <form action="{{ url_for('add_comment', post_id=post.id) }}" method="POST" class="mt-3">
+                    <div class="input-group">
+                        <input type="text" name="content" class="form-control" placeholder="Написать комментарий..." required>
+                        <button type="submit" class="btn btn-outline-primary">Отправить</button>
+                    </div>
+                </form>
+                {% else %}
+                <p class="text-muted mt-2" style="font-size: 0.85rem;"><a href="{{ url_for('login') }}">Войдите</a>, чтобы комментировать</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="text-center" style="color: #888;">
+        <p style="font-size: 3rem;">📭</p>
+        <p>Постов пока нет. Будьте первым!</p>
+    </div>
+{% endfor %}
+{% endblock %}

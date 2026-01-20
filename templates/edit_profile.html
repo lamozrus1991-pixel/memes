@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать профиль{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4 text-center">✏️ Редактировать профиль</h2>
+        
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <div class="avatar-container mb-3">
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}" 
+                         alt="Аватар" 
+                         class="rounded-circle"
+                         style="width: 120px; height: 120px; object-fit: cover; border: 3px solid var(--neon-purple);">
+                </div>
+                <h4 style="color: var(--neon-cyan);">{{ current_user.username }}</h4>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label class="form-label">📷 Аватар</label>
+                <input type="file" name="avatar" class="form-control" accept="image/*">
+                <small class="text-muted">Максимальный размер: 2MB. Форматы: PNG, JPG, GIF</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">👤 Имя пользователя</label>
+                <input type="text" name="username" class="form-control" value="{{ current_user.username }}" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">📧 Email (необязательно)</label>
+                <input type="email" name="email" class="form-control" value="{{ current_user.email or '' }}">
+            </div>
+            
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary px-4">💾 Сохранить</button>
+                <a href="{{ url_for('profile', username=current_user.username) }}" class="btn btn-outline-secondary px-4">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4 text-center">🔐 Вход</h2>
+        <form method="POST">
+            <div class="mb-4">
+                <label class="form-label">👤 Имя пользователя</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">🔒 Пароль</label>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                        <span id="password-icon">👁️</span>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">🚀 Войти</button>
+        </form>
+        <p class="mt-4 text-center">Нет аккаунта? <a href="{{ url_for('register') }}">Регистрация</a></p>
+    </div>
+</div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(fieldId + '-icon');
+    if (field.type === 'password') {
+        field.type = 'text';
+        if (icon) icon.textContent = '🔒';
+    } else {
+        field.type = 'password';
+        if (icon) icon.textContent = '👁️';
+    }
+}
+</script>
+{% endblock %}
